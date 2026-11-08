@@ -50,3 +50,63 @@ export async function getCategorias() {
   if (error) throw new Error(error.message);
   return data;
 }
+
+/** Inserta un libro nuevo. Al crearlo, todos los ejemplares están disponibles. */
+export async function crearLibro({ titulo, autor, isbn, categoriaId, portada, ejemplares }) {
+  const { data, error } = await supabase
+    .from('libros')
+    .insert({
+      titulo: titulo.trim(),
+      autor: autor.trim(),
+      isbn: isbn.trim() || null,
+      categoria_id: categoriaId || null,
+      portada: portada.trim() || null,
+      ejemplares_total: ejemplares,
+      ejemplares_disponibles: ejemplares
+    })
+    .select('id')
+    .single();
+
+  if (error) {
+    if (error.code === '23505') return { libro: null, error: 'Ya existe un libro con ese ISBN' };
+    if (error.code === '42501') return { libro: null, error: 'No tenés permisos para agregar libros' };
+    return { libro: null, error: error.message };
+  }
+  return { libro: data, error: null };
+}
+
+/** Edita un libro. El ajuste de stock lo hace la función SQL. */
+export async function actualizarLibro(id, { titulo, autor, isbn, categoriaId, portada, ejemplares }) {
+  const { error } = await supabase.rpc('actualizar_libro', {
+    p_id: id,
+    p_titulo: titulo.trim(),
+    p_autor: autor.trim(),
+    p_isbn: isbn.trim() || null,
+    p_categoria_id: categoriaId || null,
+    p_portada: portada.trim() || null,
+    p_ejemplares_total: ejemplares
+  });
+
+  if (error) {
+    if (error.code === '23505') return { error: 'Ya existe otro libro con ese ISBN' };
+    return { error: error.message };
+  }
+  return { error: null };
+}
+
+/** Elimina un libro. Falla si tiene préstamos registrados. */
+export async function eliminarLibro(id) {
+  const { data, error } = await supabase.from('libros').delete().eq('id', id).select('id');
+
+  if (error) {
+    if (error.code === '23503') {
+      return { error: 'No se puede eliminar: el libro tiene préstamos registrados' };
+    }
+    return { error: error.message };
+  }
+  // RLS no da error cuando bloquea: simplemente no borra ninguna fila
+  if (!data || data.length === 0) {
+    return { error: 'No se pudo eliminar el libro. ¿Tenés permisos de administrador?' };
+  }
+  return { error: null };
+}
