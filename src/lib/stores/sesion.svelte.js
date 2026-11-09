@@ -1,11 +1,23 @@
 import { supabase } from '#lib/supabase.js';
 
+/**
+ * @typedef {object} Perfil
+ * @property {string} [nombre]  Nombre visible del usuario
+ * @property {string} [rol]     'admin' | 'cliente'
+ */
+
+/**
+ * Estado global de la sesión (reactivo con runes).
+ *
+ * @type {{ usuario: import('@supabase/supabase-js').User | null, perfil: Perfil | null, cargando: boolean }}
+ */
 export const sesion = $state({
   usuario: null,   // usuario de Supabase Auth
   perfil: null,    // fila de la tabla perfiles (nombre, rol...)
   cargando: true   // true hasta saber si hay sesión guardada
 });
 
+/** @param {string} userId */
 export async function cargarPerfil(userId) {
   const { data } = await supabase.from('perfiles').select('*').eq('id', userId).single();
   sesion.perfil = data ?? null;

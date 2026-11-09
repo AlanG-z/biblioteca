@@ -64,23 +64,36 @@
       goto('/login');
       return;
     }
-    if (!confirm(`¿Pedir en préstamo "${libro.titulo}"?`)) return;
+    if (!confirm(`¿Solicitar en préstamo "${libro.titulo}"?`)) return;
 
     const { error: err } = await pedirPrestamo(libro.id);
 
     if (err) {
       mensaje = { tipo: 'error', texto: err };
     } else {
-      mensaje = { tipo: 'ok', texto: `Pediste "${libro.titulo}". Lo vas a ver en "Mis préstamos".` };
+      mensaje = { tipo: 'ok', texto: `Solicitaste "${libro.titulo}". Lo vas a ver en "Mis préstamos".` };
       recarga++; // actualiza los ejemplares disponibles
     }
   }
+
+  function limpiar() {
+    busqueda = '';
+    categoriaId = '';
+    soloDisponibles = false;
+  }
 </script>
 
-<section class="catalogo">
-  <h1>Catálogo</h1>
+<svelte:head>
+  <title>Catálogo · Biblioteca</title>
+</svelte:head>
 
-  <div class="barra">
+<section class="catalogo contenedor">
+  <div class="cabecera">
+    <h1 class="titulo-seccion">Catálogo</h1>
+    <p class="subtitulo-seccion">Buscá, filtrá y pedí en préstamo los libros que quieras leer.</p>
+  </div>
+
+  <div class="barra card">
     <Buscador bind:valor={busqueda} />
     <Filtros {categorias} bind:categoriaId bind:soloDisponibles />
   </div>
@@ -97,32 +110,42 @@
       {cargando}
       onVerDetalle={(libro) => goto(`/catalogo/${libro.id}`)}
       onPrestar={prestar}
+      onLimpiar={limpiar}
     />
   {/if}
 </section>
 
 <style>
   .catalogo {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 1rem;
+    padding-top: 2.5rem;
   }
+
+  .cabecera {
+    margin-bottom: 1.5rem;
+  }
+
+  .cabecera p {
+    margin-top: 0.35rem;
+  }
+
   .barra {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0.9rem;
+    padding: 1rem;
     margin-bottom: 1.5rem;
+    box-shadow: var(--sombra-sm);
   }
-  .mensaje {
-    padding: 0.7rem 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-  }
-  .ok { background: #e8f6ee; color: var(--color-exito); }
-  .error { background: #fdecea; color: var(--color-error); }
 
-  @media (min-width: 700px) {
-    .barra { flex-direction: row; align-items: center; }
-    .barra :global(input[type='search']) { min-width: 320px; }
+  .mensaje {
+    margin-bottom: 1.25rem;
+  }
+
+  @media (min-width: 760px) {
+    .barra {
+      flex-direction: row;
+      align-items: center;
+      padding: 0.85rem 1rem;
+    }
   }
 </style>

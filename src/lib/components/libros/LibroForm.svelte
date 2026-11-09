@@ -73,20 +73,20 @@
 </script>
 
 <form onsubmit={enviar} novalidate>
-  <label>
+  <label class="campo">
     Título *
     <input type="text" bind:value={campos.titulo} aria-invalid={!!errores.titulo} />
     {#if errores.titulo}<span class="campo-error">{errores.titulo}</span>{/if}
   </label>
 
-  <label>
+  <label class="campo">
     Autor *
     <input type="text" bind:value={campos.autor} aria-invalid={!!errores.autor} />
     {#if errores.autor}<span class="campo-error">{errores.autor}</span>{/if}
   </label>
 
   <div class="fila">
-    <label>
+    <label class="campo">
       Categoría
       <select bind:value={campos.categoriaId}>
         <option value="">Sin categoría</option>
@@ -96,7 +96,7 @@
       </select>
     </label>
 
-    <label>
+    <label class="campo">
       Ejemplares *
       <input
         type="number"
@@ -110,13 +110,13 @@
     </label>
   </div>
 
-  <label>
+  <label class="campo">
     ISBN (opcional)
     <input type="text" bind:value={campos.isbn} placeholder="978-0-307-47472-8" aria-invalid={!!errores.isbn} />
     {#if errores.isbn}<span class="campo-error">{errores.isbn}</span>{/if}
   </label>
 
-  <label>
+  <label class="campo">
     URL de la portada (opcional)
     <input
       type="url"
@@ -139,7 +139,8 @@
     <p class="campo-error">No se pudo cargar la imagen de esa URL.</p>
   {/if}
 
-  <button type="submit" disabled={enviando}>
+  <button class="btn btn-primario btn-block" type="submit" disabled={enviando}>
+    {#if enviando}<span class="spinner" aria-hidden="true"></span>{/if}
     {enviando ? 'Guardando...' : textoBoton}
   </button>
 </form>
@@ -148,47 +149,42 @@
   form {
     display: flex;
     flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .campo {
+    font-size: 0.875rem;
+  }
+
+  .fila {
+    display: grid;
     gap: 1rem;
   }
-  label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    font-size: 0.9rem;
-  }
-  input,
-  select {
-    padding: 0.6rem;
-    border: 1px solid var(--color-borde);
-    border-radius: 8px;
-    font-size: 1rem;
-  }
-  input[aria-invalid='true'] { border-color: var(--color-error); }
 
-  .fila { display: grid; gap: 1rem; }
   @media (min-width: 600px) {
-    .fila { grid-template-columns: 2fr 1fr; }
+    .fila {
+      grid-template-columns: 2fr 1fr;
+    }
   }
 
-  .campo-error { color: var(--color-error); font-size: 0.8rem; margin: 0; }
-  .ayuda { color: #6b7280; font-size: 0.8rem; }
+  .campo-error {
+    color: var(--color-error);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .ayuda {
+    color: var(--texto-tenue);
+    font-size: 0.875rem;
+  }
 
   .vista-previa {
     width: 120px;
     aspect-ratio: 2 / 3;
     object-fit: cover;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border-radius: var(--radio);
+    border: 1px solid var(--borde);
+    box-shadow: var(--sombra);
   }
-
-  button {
-    padding: 0.75rem;
-    border: none;
-    border-radius: 8px;
-    background: var(--color-primario);
-    color: #fff;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  button:disabled { opacity: 0.6; cursor: not-allowed; }
 </style>

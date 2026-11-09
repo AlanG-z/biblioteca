@@ -28,28 +28,89 @@
   }
 </script>
 
-<section class="auth">
-  <h1>Ingresar</h1>
+<section class="auth card">
+  <div class="cabecera">
+    <span class="icono" aria-hidden="true">🔐</span>
+    <h1>Ingresar</h1>
+    <p>Accedé para pedir libros en préstamo.</p>
+  </div>
 
   <form onsubmit={enviar}>
-    <label>
+    <label class="campo">
       Email
-      <input type="email" bind:value={email} required autocomplete="email" />
+      <input type="email" bind:value={email} required autocomplete="email" placeholder="tu@email.com" />
     </label>
 
-    <label>
+    <label class="campo">
       Contraseña
-      <input type="password" bind:value={password} required autocomplete="current-password" />
+      <input
+        type="password"
+        bind:value={password}
+        required
+        autocomplete="current-password"
+        placeholder="••••••••"
+      />
     </label>
 
     {#if error}
-      <p class="error" role="alert">{error}</p>
+      <p class="mensaje error" role="alert">{error}</p>
     {/if}
 
-    <button type="submit" disabled={enviando}>
+    <button class="btn btn-primario btn-block" type="submit" disabled={enviando}>
+      {#if enviando}<span class="spinner" aria-hidden="true"></span>{/if}
       {enviando ? 'Ingresando...' : 'Ingresar'}
     </button>
   </form>
 
-  <p>¿No tenés cuenta? <a href="/registro">Registrate</a></p>
+  <p class="pie-form">¿No tenés cuenta? <a href="/registro">Registrate</a></p>
 </section>
+
+<style>
+  .auth {
+    max-width: 420px;
+    margin: 3.5rem auto;
+    padding: 2.25rem;
+    box-shadow: var(--sombra-lg);
+  }
+
+  .cabecera {
+    text-align: center;
+    margin-bottom: 1.75rem;
+  }
+
+  .icono {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 0.75rem;
+    border-radius: var(--radio);
+    background: var(--color-primario-suave);
+    font-size: 1.4rem;
+  }
+
+  h1 {
+    font-size: 2rem; /* H1: 2rem bold (guía §3) */
+    font-weight: 700;
+    color: var(--color-titulos);
+  }
+
+  .cabecera p {
+    margin-top: 0.3rem;
+    color: var(--texto-suave);
+    font-size: 0.875rem; /* textos pequeños: 14px */
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .pie-form {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--texto-suave);
+  }
+</style>

@@ -31,9 +31,17 @@
   }
 </script>
 
+<svelte:head>
+  <title>Agregar libro · Admin · Biblioteca</title>
+</svelte:head>
+
 <section class="pagina">
   <a href="/admin/libros" class="volver">← Volver a los libros</a>
-  <h1>Agregar libro</h1>
+
+  <div class="cabecera">
+    <h1 class="titulo-seccion">Agregar libro</h1>
+    <p class="subtitulo-seccion">Cargá un título nuevo para el catálogo.</p>
+  </div>
 
   {#if mensaje}
     <p class="mensaje {mensaje.tipo}" role={mensaje.tipo === 'error' ? 'alert' : 'status'}>
@@ -42,20 +50,49 @@
     </p>
   {/if}
 
-  {#key claveForm}
-    <LibroForm
-      inicial={{ categoriaId: categoriaPrevia }}
-      {categorias}
-      textoBoton="Agregar libro"
-      onGuardar={guardar}
-    />
-  {/key}
+  <div class="card formulario">
+    {#key claveForm}
+      <LibroForm
+        inicial={{ categoriaId: categoriaPrevia }}
+        {categorias}
+        textoBoton="Agregar libro"
+        onGuardar={guardar}
+      />
+    {/key}
+  </div>
 </section>
 
 <style>
-  .pagina { max-width: 640px; margin: 0 auto; padding: 1rem; }
-  .volver { display: inline-block; margin-bottom: 0.5rem; }
-  .mensaje { padding: 0.7rem 1rem; border-radius: 8px; margin: 1rem 0; }
-  .ok { background: #e8f6ee; color: var(--color-exito); }
-  .error { background: #fdecea; color: var(--color-error); }
+  .pagina {
+    max-width: 680px;
+    margin: 0 auto;
+    padding-top: 2rem;
+  }
+
+  .volver {
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+
+  .cabecera {
+    margin-bottom: 1.25rem;
+  }
+
+  .cabecera p {
+    margin-top: 0.35rem;
+  }
+
+  .mensaje {
+    margin-bottom: 1.25rem;
+  }
+
+  .mensaje a {
+    margin-left: 0.5rem;
+    font-weight: 600;
+  }
+
+  .formulario {
+    padding: 1.75rem;
+    box-shadow: var(--sombra);
+  }
 </style>

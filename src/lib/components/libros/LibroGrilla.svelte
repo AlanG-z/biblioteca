@@ -1,15 +1,38 @@
 <script>
   import LibroCard from './LibroCard.svelte';
 
-  let { libros = [], cargando = false, onVerDetalle = () => {}, onPrestar = () => {} } = $props();
+  let {
+    libros = [],
+    cargando = false,
+    onVerDetalle = () => {},
+    onPrestar = () => {},
+    onLimpiar = null // opcional: acción sugerida en el estado vacío
+  } = $props();
 </script>
 
 {#if cargando && libros.length === 0}
-  <p class="estado">Cargando libros...</p>
+  <p class="estado">
+    <span class="spinner" aria-hidden="true"></span>
+    Buscando libros...
+  </p>
 {:else if libros.length === 0}
-  <p class="estado">No se encontraron libros con esos filtros.</p>
+  <div class="estado-vacio">
+    <span class="vacio-icono" aria-hidden="true">📚</span>
+    <p>No encontramos libros con esa búsqueda o esos filtros. Probá con otros términos.</p>
+    {#if onLimpiar}
+      <button class="btn btn-acento" type="button" onclick={onLimpiar}>
+        Limpiar búsqueda y filtros
+      </button>
+    {/if}
+  </div>
 {:else}
-  <div class="grilla" class:actualizando={cargando}>
+  {#if cargando}
+    <p class="actualizando" role="status">
+      <span class="spinner" aria-hidden="true"></span>
+      Actualizando resultados...
+    </p>
+  {/if}
+  <div class="grilla" class:opacita={cargando}>
     {#each libros as libro (libro.id)}
       <LibroCard {libro} {onVerDetalle} {onPrestar} />
     {/each}
@@ -19,14 +42,33 @@
 <style>
   .grilla {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    transition: opacity 0.2s;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 1.25rem;
+    transition: opacity var(--transicion);
   }
-  .actualizando { opacity: 0.5; }
+
+  .opacita {
+    opacity: 0.55;
+  }
+
+  /* indicador de carga para búsquedas en tiempo real (guía §5) */
+  .actualizando {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    margin-bottom: 0.85rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-enlace);
+  }
+
   .estado {
-    text-align: center;
-    padding: 2rem 0;
-    color: #6b7280;
+    color: var(--texto-suave);
+  }
+
+  .estado .spinner {
+    margin-right: 0.4rem;
+    vertical-align: -0.15em;
   }
 </style>

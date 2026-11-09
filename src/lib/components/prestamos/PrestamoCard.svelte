@@ -16,9 +16,18 @@
     if (prestamo.diasRestantes === 1) return 'Vence mañana';
     return `Te quedan ${prestamo.diasRestantes} días`;
   });
+
+  // próximo a vencer: advertencia amarilla/naranja (guía §2)
+  let porVencer = $derived(
+    prestamo.estado === 'activo' && prestamo.diasRestantes > 0 && prestamo.diasRestantes <= 3
+  );
 </script>
 
-<article class="prestamo" class:atrasado={prestamo.estado === 'atrasado'}>
+<article
+  class="card prestamo"
+  class:atrasado={prestamo.estado === 'atrasado'}
+  class:por-vencer={porVencer}
+>
   <div class="portada">
     {#if prestamo.libro.portada}
       <img src={prestamo.libro.portada} alt="" loading="lazy" />
@@ -30,7 +39,7 @@
   <div class="cuerpo">
     <div class="cabecera">
       <h3><a href={`/catalogo/${prestamo.libro.id}`}>{prestamo.libro.titulo}</a></h3>
-      <EstadoBadge estado={prestamo.estado} />
+      <EstadoBadge estado={prestamo.estado} {porVencer} />
     </div>
 
     <p class="autor">{prestamo.libro.autor}</p>
@@ -42,7 +51,13 @@
       <dd>{formatearFecha(prestamo.fechaPrevista)}</dd>
     </dl>
 
-    <p class="detalle" class:alerta={prestamo.estado === 'atrasado'}>{detalle}</p>
+    <p
+      class="detalle"
+      class:alerta={prestamo.estado === 'atrasado'}
+      class:aviso={porVencer}
+    >
+      {#if porVencer}<span aria-hidden="true">⏳</span> {/if}{detalle}
+    </p>
 
     {#if prestamo.multa}
       <p class="multa" class:pagada={prestamo.multa.pagada}>
@@ -58,13 +73,23 @@
   .prestamo {
     display: flex;
     gap: 1rem;
-    padding: 1rem;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem 1.1rem;
     border-left: 4px solid transparent;
+    transition: box-shadow var(--transicion), transform var(--transicion);
   }
-  .prestamo.atrasado { border-left-color: var(--color-error); }
+
+  .prestamo:hover {
+    box-shadow: var(--sombra);
+    transform: translateY(-2px);
+  }
+
+  .prestamo.atrasado {
+    border-left-color: var(--color-error); /* retraso: rojo alerta */
+  }
+
+  .prestamo.por-vencer {
+    border-left-color: var(--color-advertencia); /* próximo a vencer: advertencia */
+  }
 
   .portada {
     flex: none;
@@ -72,14 +97,23 @@
     height: 96px;
     display: grid;
     place-items: center;
-    background: #eef0f3;
-    border-radius: 6px;
+    background: var(--superficie-2);
+    border-radius: var(--radio-sm);
     overflow: hidden;
     font-size: 1.8rem;
   }
-  .portada img { width: 100%; height: 100%; object-fit: cover; }
 
-  .cuerpo { flex: 1; min-width: 0; }
+  .portada img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cuerpo {
+    flex: 1;
+    min-width: 0;
+  }
+
   .cabecera {
     display: flex;
     flex-wrap: wrap;
@@ -87,32 +121,78 @@
     justify-content: space-between;
     gap: 0.5rem;
   }
-  h3 { margin: 0; font-size: 1.05rem; line-height: 1.3; }
-  h3 a { color: inherit; text-decoration: none; }
-  h3 a:hover { text-decoration: underline; }
-  .autor { margin: 0.2rem 0 0.6rem; color: #4b5563; font-size: 0.9rem; }
+
+  h3 {
+    margin: 0;
+    font-family: var(--fuente); /* títulos de tarjeta en sans */
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  h3 a {
+    color: var(--color-titulos); /* título del libro: azul institucional */
+    text-decoration: none;
+  }
+
+  h3 a:hover {
+    color: var(--color-enlace);
+    text-decoration: none;
+  }
+
+  .autor {
+    margin: 0.2rem 0 0.6rem;
+    color: var(--texto-suave);
+    font-size: 0.875rem;
+    font-style: italic;
+  }
 
   dl {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.2rem 0.8rem;
     margin: 0 0 0.6rem;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
   }
-  dt { color: #6b7280; }
-  dd { margin: 0; }
 
-  .detalle { margin: 0; font-size: 0.9rem; }
-  .detalle.alerta { color: var(--color-error); font-weight: 600; }
+  dt {
+    color: var(--texto-tenue);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .detalle {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--texto-suave);
+  }
+
+  .detalle.alerta {
+    color: var(--color-error);
+    font-weight: 600;
+  }
+
+  .detalle.aviso {
+    color: #92400e;
+    font-weight: 600;
+  }
 
   .multa {
     margin: 0.6rem 0 0;
-    padding: 0.5rem 0.7rem;
-    border-radius: 8px;
-    background: #fdecea;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-error-borde);
+    border-radius: var(--radio-sm);
+    background: var(--color-error-suave);
     color: var(--color-error);
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     font-weight: 600;
   }
-  .multa.pagada { background: #e8f6ee; color: var(--color-exito); }
+
+  .multa.pagada {
+    background: var(--color-exito-suave);
+    border-color: var(--color-exito-borde);
+    color: var(--color-exito);
+  }
 </style>

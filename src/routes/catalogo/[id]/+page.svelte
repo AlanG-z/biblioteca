@@ -30,10 +30,14 @@
   }
 </script>
 
-<section class="detalle">
+<svelte:head>
+  <title>{libro.titulo} · Biblioteca</title>
+</svelte:head>
+
+<section class="detalle contenedor">
   <a href="/catalogo" class="volver">← Volver al catálogo</a>
 
-  <div class="contenido">
+  <div class="contenido card">
     <div class="portada">
       {#if libro.portada}
         <img src={libro.portada} alt={`Portada de ${libro.titulo}`} />
@@ -51,16 +55,22 @@
         <dt>ISBN</dt>
         <dd>{libro.isbn ?? '—'}</dd>
         <dt>Ejemplares</dt>
-        <dd>{libro.ejemplares} disponibles de {libro.ejemplaresTotal}</dd>
+        <dd>
+          <strong>{libro.ejemplares}</strong> disponibles de {libro.ejemplaresTotal}
+        </dd>
       </dl>
 
       {#if mensaje}
         <p class="mensaje {mensaje.tipo}" role="status">{mensaje.texto}</p>
       {/if}
 
-      <button onclick={prestar} disabled={!libro.disponible || enviando}>
+      <button
+        class="btn btn-primario btn-grande"
+        onclick={prestar}
+        disabled={!libro.disponible || enviando}
+      >
         {#if enviando}
-          Procesando...
+          <span class="spinner" aria-hidden="true"></span> Procesando...
         {:else if libro.disponible}
           Pedir préstamo
         {:else}
@@ -72,33 +82,110 @@
 </section>
 
 <style>
-  .detalle { max-width: 900px; margin: 0 auto; padding: 1rem; }
-  .volver { display: inline-block; margin-bottom: 1rem; }
-  .contenido { display: grid; gap: 1.5rem; }
-  .portada { aspect-ratio: 2 / 3; max-width: 260px; background: #eef0f3; border-radius: 12px; overflow: hidden; }
-  .portada img { width: 100%; height: 100%; object-fit: cover; }
-  .sin-portada { display: grid; place-items: center; height: 100%; font-size: 4rem; }
-  .categoria { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; }
-  h1 { margin: 0.3rem 0; }
-  .autor { margin: 0 0 1rem; color: #4b5563; }
-  dl { display: grid; grid-template-columns: auto 1fr; gap: 0.4rem 1rem; margin-bottom: 1.2rem; }
-  dt { font-weight: 600; }
-  dd { margin: 0; }
-  .mensaje { padding: 0.7rem 1rem; border-radius: 8px; }
-  .ok { background: #e8f6ee; color: var(--color-exito); }
-  .error { background: #fdecea; color: var(--color-error); }
-  button {
-    padding: 0.7rem 1.4rem;
-    border: none;
-    border-radius: 8px;
-    background: var(--color-primario);
-    color: #fff;
-    font-size: 1rem;
-    cursor: pointer;
+  .detalle {
+    padding-top: 2rem;
+    max-width: 920px;
   }
-  button:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-  @media (min-width: 700px) {
-    .contenido { grid-template-columns: 260px 1fr; }
+  .volver {
+    display: inline-block;
+    margin-bottom: 1.25rem;
+  }
+
+  .contenido {
+    display: grid;
+    gap: 1.75rem;
+    padding: 1.75rem;
+    box-shadow: var(--sombra);
+  }
+
+  .portada {
+    aspect-ratio: 2 / 3;
+    max-width: 280px;
+    margin-inline: auto;
+    background: var(--superficie-2);
+    border-radius: var(--radio);
+    overflow: hidden;
+    box-shadow: var(--sombra-lg);
+  }
+
+  .portada img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .sin-portada {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    font-size: 4rem;
+    opacity: 0.7;
+  }
+
+  .categoria {
+    display: inline-block;
+    padding: 0.25rem 0.7rem;
+    border-radius: var(--radio-pill);
+    background: var(--naranja-suave);
+    border: 1px solid var(--naranja-borde);
+    color: var(--texto-enfasis);
+    font-family: var(--fuente);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  h1 {
+    margin: 0.75rem 0 0.35rem;
+    color: var(--color-titulos);
+    font-weight: 700;
+  }
+
+  .autor {
+    margin: 0 0 1.25rem;
+    color: var(--texto-suave);
+    font-size: 1rem;
+    font-style: italic;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1.25rem;
+    margin: 0 0 1.5rem;
+    padding: 1rem 0;
+    border-block: 1px solid var(--borde);
+    font-size: 1rem;
+  }
+
+  dt {
+    color: var(--texto-tenue);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .mensaje {
+    margin-bottom: 1rem;
+  }
+
+  .btn-grande {
+    padding: 0.85rem 2rem;
+  }
+
+  @media (min-width: 720px) {
+    .contenido {
+      grid-template-columns: 280px 1fr;
+      padding: 2rem;
+    }
+
+    .portada {
+      margin-inline: 0;
+    }
   }
 </style>

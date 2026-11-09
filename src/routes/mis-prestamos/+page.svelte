@@ -48,11 +48,18 @@
   });
 </script>
 
-<section class="mis-prestamos">
-  <h1>Mis préstamos</h1>
+<svelte:head>
+  <title>Mis préstamos · Biblioteca</title>
+</svelte:head>
+
+<section class="mis-prestamos contenedor">
+  <div class="cabecera">
+    <h1 class="titulo-seccion">Mis préstamos</h1>
+    <p class="subtitulo-seccion">Seguí el estado de los libros que tenés y los que ya devolviste.</p>
+  </div>
 
   {#if multasImpagas.length > 0}
-    <p class="aviso" role="alert">
+    <p class="mensaje error aviso-multas" role="alert">
       Tenés {multasImpagas.length} {multasImpagas.length === 1 ? 'multa impaga' : 'multas impagas'}
       por {formatearMonto(totalImpago)}. Mientras no la pagues no vas a poder pedir nuevos libros.
     </p>
@@ -72,15 +79,20 @@
   </div>
 
   {#if cargando}
-    <p class="estado">Cargando tus préstamos...</p>
+    <p class="estado"><span class="spinner" aria-hidden="true"></span> Cargando tus préstamos...</p>
   {:else if error}
     <p class="estado error" role="alert">{error}</p>
   {:else if prestamos.length === 0}
-    <p class="estado">
-      Todavía no pediste ningún libro. <a href="/catalogo">Ir al catálogo</a>
-    </p>
+    <div class="estado-vacio">
+      <span class="vacio-icono" aria-hidden="true">📖</span>
+      <p>Todavía no tenés libros prestados. ¡Explorá el catálogo!</p>
+      <a class="btn btn-acento" href="/catalogo">Explorar catálogo</a>
+    </div>
   {:else if visibles.length === 0}
-    <p class="estado">No tenés préstamos en esta categoría.</p>
+    <div class="estado-vacio">
+      <span class="vacio-icono" aria-hidden="true">🗂️</span>
+      <p>No tenés préstamos en esta categoría.</p>
+    </div>
   {:else}
     <div class="lista">
       {#each visibles as prestamo (prestamo.id)}
@@ -94,50 +106,75 @@
 
 <style>
   .mis-prestamos {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1rem;
+    max-width: 860px;
+    padding-top: 2.5rem;
   }
-  .aviso {
-    padding: 0.8rem 1rem;
-    border-radius: 8px;
-    background: #fdecea;
-    color: var(--color-error);
+
+  .cabecera {
+    margin-bottom: 1.5rem;
+  }
+
+  .cabecera p {
+    margin-top: 0.35rem;
+  }
+
+  .aviso-multas {
+    margin-bottom: 1.25rem;
     font-weight: 600;
   }
+
   .tabs {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 1rem 0;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+    padding: 0.3rem;
+    width: fit-content;
+    background: var(--superficie-2);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-pill);
   }
+
   .tabs button {
-    padding: 0.4rem 0.9rem;
-    border: 1px solid var(--color-borde);
-    border-radius: 999px;
-    background: #fff;
-    font-size: 0.9rem;
+    min-height: 36px;
+    padding: 0.4rem 1rem;
+    border: none;
+    border-radius: var(--radio-pill);
+    background: transparent;
+    color: var(--texto-suave);
+    font-size: 0.875rem;
+    font-weight: 600;
     cursor: pointer;
+    transition: background var(--transicion), color var(--transicion), box-shadow var(--transicion);
   }
+
+  .tabs button:hover {
+    color: var(--texto);
+  }
+
   .tabs button.activa {
-    background: var(--color-primario);
-    border-color: var(--color-primario);
+    background: var(--color-primario); /* píldora verde */
     color: #fff;
+    box-shadow: var(--sombra-sm);
   }
+
   .lista {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
-  .estado {
-    text-align: center;
-    padding: 2rem 0;
-    color: #6b7280;
+
+  .estado .spinner {
+    margin-right: 0.4rem;
+    vertical-align: -0.15em;
   }
-  .estado.error { color: var(--color-error); }
+
   .nota {
-    margin-top: 1.5rem;
-    font-size: 0.85rem;
-    color: #6b7280;
+    margin-top: 2rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radio);
+    background: var(--superficie-2);
+    font-size: 0.875rem;
+    color: var(--texto-suave);
   }
 </style>

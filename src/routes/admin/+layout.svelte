@@ -13,5 +13,8 @@
 {#if sesion.perfil?.rol === 'admin'}
   {@render children()}
 {:else}
-  <p>Verificando permisos...</p>
+  <p class="estado">
+    <span class="spinner" aria-hidden="true"></span>
+    Verificando permisos...
+  </p>
 {/if}
