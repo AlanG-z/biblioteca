@@ -49,7 +49,6 @@
 <section class="hero">
   <div class="contenedor hero-interior">
     <div class="hero-texto">
-      <span class="badge-demo">Sistema de préstamos · SvelteKit + Supabase</span>
 
       <h1>
         La biblioteca,<br />

@@ -11,7 +11,7 @@
       <div class="sin-portada">📚</div>
     {/if}
     <span class="disponibilidad" class:disponible={libro.disponible}>
-      {libro.disponible ? 'Disponible' : 'Prestado'}
+      {libro.disponible ? 'Disponible' : 'Agotado'}
     </span>
   </div>
 

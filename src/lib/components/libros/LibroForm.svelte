@@ -18,6 +18,7 @@
     ejemplares: inicial.ejemplares ?? 1
   });
 
+  /** @type {Record<string, string>} */
   let errores = $state({});
   let enviando = $state(false);
   let portadaFalla = $state(false);
@@ -27,6 +28,7 @@
 
     if (!campos.titulo.trim()) e.titulo = 'El título es obligatorio';
     if (!campos.autor.trim()) e.autor = 'El autor es obligatorio';
+    if (!campos.categoriaId) e.categoriaId = 'Elegí una categoría';
 
     const isbnLimpio = campos.isbn.replace(/[\s-]/g, '');
     if (isbnLimpio && !/^(\d{9}[\dXx]|\d{13})$/.test(isbnLimpio)) {
@@ -87,13 +89,14 @@
 
   <div class="fila">
     <label class="campo">
-      Categoría
-      <select bind:value={campos.categoriaId}>
-        <option value="">Sin categoría</option>
+      Categoría *
+      <select bind:value={campos.categoriaId} aria-invalid={!!errores.categoriaId}>
+        <option value="">Elegí una categoría</option>
         {#each categorias as categoria (categoria.id)}
           <option value={categoria.id}>{categoria.nombre}</option>
         {/each}
       </select>
+      {#if errores.categoriaId}<span class="campo-error">{errores.categoriaId}</span>{/if}
     </label>
 
     <label class="campo">

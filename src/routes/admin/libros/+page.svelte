@@ -132,14 +132,14 @@
                   href={`/admin/libros/${libro.id}/editar`}
                   title={`Editar los datos de "${libro.titulo}"`}
                 >
-                  ✏️ Editar
+                   Editar
                 </a>
                 <button
                   class="btn btn-peligro btn-chico"
                   title={`Eliminar "${libro.titulo}" del catálogo`}
                   onclick={() => eliminar(libro)}
                 >
-                  🗑️ Eliminar
+                   Eliminar
                 </button>
               </td>
             </tr>

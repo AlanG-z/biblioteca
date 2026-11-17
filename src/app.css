@@ -386,11 +386,13 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgb(27 67 50 / 0.15);
 }
 
-input[aria-invalid='true'] {
+input[aria-invalid='true'],
+select[aria-invalid='true'] {
   border-color: var(--color-error);
 }
 
-input[aria-invalid='true']:focus {
+input[aria-invalid='true']:focus,
+select[aria-invalid='true']:focus {
   box-shadow: 0 0 0 3px rgb(220 38 38 / 0.15);
 }
 
