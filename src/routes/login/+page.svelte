@@ -8,12 +8,27 @@
   let error = $state('');
   let enviando = $state(false);
 
+  /** @type {Record<string, string>} */
+  let errores = $state({});
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function validar() {
+    /** @type {Record<string, string>} */
+    const e = {};
+    if (!EMAIL_RE.test(email.trim())) e.email = 'Ingresá un email válido';
+    if (!password) e.password = 'Ingresá tu contraseña';
+    errores = e;
+    return Object.keys(e).length === 0;
+  }
+
   async function enviar(e) {
     e.preventDefault();
     error = '';
-    enviando = true;
+    if (!validar()) return;
 
-    const { usuario, error: err } = await ingresar(email, password);
+    enviando = true;
+    const { usuario, error: err } = await ingresar(email.trim(), password);
 
     if (err) {
       error = err;
@@ -35,10 +50,19 @@
     <p>Accedé para pedir libros en préstamo.</p>
   </div>
 
-  <form onsubmit={enviar}>
+  <form onsubmit={enviar} novalidate>
     <label class="campo">
       Email
-      <input type="email" bind:value={email} required autocomplete="email" placeholder="tu@email.com" />
+      <input
+        type="email"
+        bind:value={email}
+        maxlength="254"
+        required
+        autocomplete="email"
+        placeholder="tu@email.com"
+        aria-invalid={!!errores.email}
+      />
+      {#if errores.email}<span class="campo-error">{errores.email}</span>{/if}
     </label>
 
     <label class="campo">
@@ -49,7 +73,9 @@
         required
         autocomplete="current-password"
         placeholder="••••••••"
+        aria-invalid={!!errores.password}
       />
+      {#if errores.password}<span class="campo-error">{errores.password}</span>{/if}
     </label>
 
     {#if error}
@@ -105,6 +131,13 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .campo-error {
+    color: var(--color-error);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 0;
   }
 
   .pie-form {

@@ -5,17 +5,47 @@
   let nombre = $state('');
   let email = $state('');
   let password = $state('');
+  let repetir = $state('');
   let error = $state('');
   let aviso = $state('');
   let enviando = $state(false);
+
+  /** @type {Record<string, string>} */
+  let errores = $state({});
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function validar() {
+    /** @type {Record<string, string>} */
+    const e = {};
+
+    const nombreLimpio = nombre.trim();
+    if (nombreLimpio.length < 2) e.nombre = 'Ingresá tu nombre (mínimo 2 caracteres)';
+    else if (nombreLimpio.length > 60) e.nombre = 'El nombre no puede superar los 60 caracteres';
+
+    if (!EMAIL_RE.test(email.trim())) e.email = 'Ingresá un email válido';
+
+    if (password.length < 6) e.password = 'La contraseña debe tener al menos 6 caracteres';
+    else if (password.length > 72) e.password = 'La contraseña no puede superar los 72 caracteres';
+
+    if (password !== repetir) e.repetir = 'Las contraseñas no coinciden';
+
+    errores = e;
+    return Object.keys(e).length === 0;
+  }
 
   async function enviar(e) {
     e.preventDefault();
     error = '';
     aviso = '';
-    enviando = true;
+    if (!validar()) return;
 
-    const { requiereConfirmacion, error: err } = await registrar(nombre, email, password);
+    enviando = true;
+    const { requiereConfirmacion, error: err } = await registrar(
+      nombre.trim(),
+      email.trim(),
+      password
+    );
     enviando = false;
 
     if (err) {
@@ -35,15 +65,33 @@
     <p>Registrate y empezá a pedir libros en préstamo.</p>
   </div>
 
-  <form onsubmit={enviar}>
+  <form onsubmit={enviar} novalidate>
     <label class="campo">
       Nombre
-      <input type="text" bind:value={nombre} required autocomplete="name" placeholder="Tu nombre" />
+      <input
+        type="text"
+        bind:value={nombre}
+        maxlength="60"
+        required
+        autocomplete="name"
+        placeholder="Tu nombre"
+        aria-invalid={!!errores.nombre}
+      />
+      {#if errores.nombre}<span class="campo-error">{errores.nombre}</span>{/if}
     </label>
 
     <label class="campo">
       Email
-      <input type="email" bind:value={email} required autocomplete="email" placeholder="tu@email.com" />
+      <input
+        type="email"
+        bind:value={email}
+        maxlength="254"
+        required
+        autocomplete="email"
+        placeholder="tu@email.com"
+        aria-invalid={!!errores.email}
+      />
+      {#if errores.email}<span class="campo-error">{errores.email}</span>{/if}
     </label>
 
     <label class="campo">
@@ -52,10 +100,27 @@
         type="password"
         bind:value={password}
         minlength="6"
+        maxlength="72"
         required
         autocomplete="new-password"
         placeholder="••••••••"
+        aria-invalid={!!errores.password}
       />
+      {#if errores.password}<span class="campo-error">{errores.password}</span>{/if}
+    </label>
+
+    <label class="campo">
+      Repetir contraseña
+      <input
+        type="password"
+        bind:value={repetir}
+        maxlength="72"
+        required
+        autocomplete="new-password"
+        placeholder="••••••••"
+        aria-invalid={!!errores.repetir}
+      />
+      {#if errores.repetir}<span class="campo-error">{errores.repetir}</span>{/if}
     </label>
 
     {#if error}<p class="mensaje error" role="alert">{error}</p>{/if}
@@ -110,6 +175,13 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .campo-error {
+    color: var(--color-error);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 0;
   }
 
   .pie-form {

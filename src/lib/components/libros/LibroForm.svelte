@@ -24,10 +24,17 @@
   let portadaFalla = $state(false);
 
   function validar() {
+    /** @type {Record<string, string>} */
     const e = {};
 
-    if (!campos.titulo.trim()) e.titulo = 'El título es obligatorio';
-    if (!campos.autor.trim()) e.autor = 'El autor es obligatorio';
+    const titulo = campos.titulo.trim();
+    if (!titulo) e.titulo = 'El título es obligatorio';
+    else if (titulo.length > 30) e.titulo = 'El título no puede superar los 30 caracteres';
+
+    const autor = campos.autor.trim();
+    if (!autor) e.autor = 'El autor es obligatorio';
+    else if (autor.length > 50) e.autor = 'El autor no puede superar los 50 caracteres';
+
     if (!campos.categoriaId) e.categoriaId = 'Elegí una categoría';
 
     const isbnLimpio = campos.isbn.replace(/[\s-]/g, '');
@@ -37,13 +44,18 @@
 
     if (!Number.isInteger(campos.ejemplares) || campos.ejemplares < 1) {
       e.ejemplares = 'Ingresá al menos 1 ejemplar';
+    } else if (campos.ejemplares > 999) {
+      e.ejemplares = 'No puede superar los 999 ejemplares';
     } else if (campos.ejemplares < prestados) {
       e.ejemplares = `No puede ser menor a los ejemplares prestados (${prestados})`;
     }
 
-    if (campos.portada.trim()) {
+    const portada = campos.portada.trim();
+    if (portada.length > 500) {
+      e.portada = 'La URL no puede superar los 500 caracteres';
+    } else if (portada) {
       try {
-        const url = new URL(campos.portada.trim());
+        const url = new URL(portada);
         if (!['http:', 'https:'].includes(url.protocol)) throw new Error();
       } catch {
         e.portada = 'Ingresá una URL válida que empiece con http o https';
@@ -77,13 +89,13 @@
 <form onsubmit={enviar} novalidate>
   <label class="campo">
     Título *
-    <input type="text" bind:value={campos.titulo} aria-invalid={!!errores.titulo} />
+    <input type="text" bind:value={campos.titulo} maxlength="30" aria-invalid={!!errores.titulo} />
     {#if errores.titulo}<span class="campo-error">{errores.titulo}</span>{/if}
   </label>
 
   <label class="campo">
     Autor *
-    <input type="text" bind:value={campos.autor} aria-invalid={!!errores.autor} />
+    <input type="text" bind:value={campos.autor} maxlength="30" aria-invalid={!!errores.autor} />
     {#if errores.autor}<span class="campo-error">{errores.autor}</span>{/if}
   </label>
 
@@ -104,6 +116,7 @@
       <input
         type="number"
         min={Math.max(1, prestados)}
+        max="999"
         step="1"
         bind:value={campos.ejemplares}
         aria-invalid={!!errores.ejemplares}
@@ -115,7 +128,7 @@
 
   <label class="campo">
     ISBN (opcional)
-    <input type="text" bind:value={campos.isbn} placeholder="978-0-307-47472-8" aria-invalid={!!errores.isbn} />
+    <input type="text" bind:value={campos.isbn} maxlength="17" placeholder="978-0-307-47472-8" aria-invalid={!!errores.isbn} />
     {#if errores.isbn}<span class="campo-error">{errores.isbn}</span>{/if}
   </label>
 
@@ -125,6 +138,7 @@
       type="url"
       bind:value={campos.portada}
       oninput={() => (portadaFalla = false)}
+      maxlength="500"
       placeholder="https://..."
       aria-invalid={!!errores.portada}
     />
