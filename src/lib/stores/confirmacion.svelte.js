@@ -66,3 +66,6 @@ export function responderConfirmacion(valor) {
   resolver?.(valor);
   resolver = null;
 }
+
+
+
