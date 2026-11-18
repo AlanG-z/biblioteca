@@ -7,6 +7,64 @@ export async function pedirPrestamo(libroId) {
   return { prestamo: data ?? null, error: error ? error.message : null };
 }
 
+/**
+ * ¿Tiene el usuario al menos una multa impaga?
+ * @param {string} usuarioId
+ */
+export async function tieneMultasImpagas(usuarioId) {
+  const { data, error } = await supabase
+    .from('prestamos')
+    .select('id, multas!inner(id, pagada)')
+    .eq('usuario_id', usuarioId)
+    .eq('multas.pagada', false)
+    .limit(1);
+
+  if (error) throw new Error(error.message);
+  return data.length > 0;
+}
+
+/**
+ * ¿Tiene el usuario un préstamo atrasado? (sin devolver y con la fecha prevista vencida)
+ * @param {string} usuarioId
+ */
+export async function tienePrestamoAtrasado(usuarioId) {
+  const { data, error } = await supabase
+    .from('prestamos')
+    .select('id')
+    .eq('usuario_id', usuarioId)
+    .is('fecha_devolucion_real', null)
+    .lt('fecha_devolucion_prevista', hoyISO())
+    .limit(1);
+
+  if (error) throw new Error(error.message);
+  return data.length > 0;
+}
+
+/**
+ * Motivo por el que el usuario no puede pedir un préstamo nuevo, o null si puede.
+ * Nunca lanza: si falla la consulta deja pasar y la RPC vuelve a validar en el servidor.
+ * @param {string} usuarioId
+ * @returns {Promise<string | null>}
+ */
+export async function motivoBloqueoPrestamo(usuarioId) {
+  try {
+    const [multaImpaga, atrasado] = await Promise.all([
+      tieneMultasImpagas(usuarioId),
+      tienePrestamoAtrasado(usuarioId)
+    ]);
+
+    if (multaImpaga) {
+      return 'Tenés una multa impaga. Hasta que no la pagues no vas a poder pedir libros nuevos.';
+    }
+    if (atrasado) {
+      return 'Tenés un libro atrasado. Devuélvelo antes de pedir un préstamo nuevo.';
+    }
+  } catch {
+    // sin red o sin permisos no bloqueamos: en el servidor la RPC valida igual
+  }
+  return null;
+}
+
 /** Convierte la fila de la base al formato que usan los componentes */
 function normalizarPrestamo(fila) {
   // multas es una relación 1 a 1: puede venir como objeto, arreglo o null

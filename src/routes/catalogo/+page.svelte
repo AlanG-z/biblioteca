@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { getLibros, getCategorias } from '#lib/api/libros.js';
-  import { pedirPrestamo } from '#lib/api/prestamos.js';
+  import { pedirPrestamo, motivoBloqueoPrestamo } from '#lib/api/prestamos.js';
   import { sesion } from '#lib/stores/sesion.svelte.js';
   import Buscador from '#lib/components/libros/Buscador.svelte';
   import Filtros from '#lib/components/libros/Filtros.svelte';
@@ -17,7 +17,8 @@
   let categorias = $state([]);
   let cargando = $state(true);
   let error = $state('');
-  let mensaje = $state(null); // { tipo: 'ok' | 'error', texto }
+  /** @type {null | { tipo: string, texto: string, enlace?: { href: string, texto: string } }} */
+  let mensaje = $state(null); // { tipo: 'ok' | 'error', texto, enlace? }
 
   let peticion = 0; // evita que una respuesta lenta pise a una más nueva
 
@@ -60,10 +61,23 @@
   async function prestar(libro) {
     mensaje = null;
 
-    if (!sesion.usuario) {
+    const usuarioId = sesion.usuario?.id;
+    if (!usuarioId) {
       goto('/login');
       return;
     }
+
+    // multa impaga o libro atrasado: no puede pedir otro préstamo
+    const motivo = await motivoBloqueoPrestamo(usuarioId);
+    if (motivo) {
+      mensaje = {
+        tipo: 'error',
+        texto: motivo,
+        enlace: { href: '/mis-prestamos', texto: 'Ver mis préstamos' }
+      };
+      return;
+    }
+
     if (!confirm(`¿Solicitar en préstamo "${libro.titulo}"?`)) return;
 
     const { error: err } = await pedirPrestamo(libro.id);
@@ -99,7 +113,12 @@
   </div>
 
   {#if mensaje}
-    <p class="mensaje {mensaje.tipo}" role="status">{mensaje.texto}</p>
+    <p class="mensaje {mensaje.tipo}" role="status">
+      {mensaje.texto}
+      {#if mensaje.enlace}
+        {' '}<a href={mensaje.enlace.href}>{mensaje.enlace.texto}</a>
+      {/if}
+    </p>
   {/if}
 
   {#if error}

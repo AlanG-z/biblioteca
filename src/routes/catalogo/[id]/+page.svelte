@@ -1,31 +1,47 @@
 <script>
   import { goto, invalidateAll } from '$app/navigation';
-  import { pedirPrestamo } from '#lib/api/prestamos.js';
+  import { pedirPrestamo, motivoBloqueoPrestamo } from '#lib/api/prestamos.js';
   import { sesion } from '#lib/stores/sesion.svelte.js';
 
   let { data } = $props();
   let libro = $derived(data.libro);
 
+  /** @type {null | { tipo: string, texto: string, enlace?: { href: string, texto: string } }} */
   let mensaje = $state(null);
   let enviando = $state(false);
 
   async function prestar() {
     mensaje = null;
 
-    if (!sesion.usuario) {
+    const usuarioId = sesion.usuario?.id;
+    if (!usuarioId) {
       goto('/login');
       return;
     }
 
     enviando = true;
-    const { error: err } = await pedirPrestamo(libro.id);
-    enviando = false;
+    try {
+      // multa impaga o libro atrasado: no puede pedir otro préstamo
+      const motivo = await motivoBloqueoPrestamo(usuarioId);
+      if (motivo) {
+        mensaje = {
+          tipo: 'error',
+          texto: motivo,
+          enlace: { href: '/mis-prestamos', texto: 'Ver mis préstamos' }
+        };
+        return;
+      }
 
-    if (err) {
-      mensaje = { tipo: 'error', texto: err };
-    } else {
-      mensaje = { tipo: 'ok', texto: 'Préstamo registrado. Lo ves en "Mis préstamos".' };
-      await invalidateAll(); // vuelve a cargar el libro con el stock actualizado
+      const { error: err } = await pedirPrestamo(libro.id);
+
+      if (err) {
+        mensaje = { tipo: 'error', texto: err };
+      } else {
+        mensaje = { tipo: 'ok', texto: 'Préstamo registrado. Lo ves en "Mis préstamos".' };
+        await invalidateAll(); // vuelve a cargar el libro con el stock actualizado
+      }
+    } finally {
+      enviando = false;
     }
   }
 </script>
@@ -61,7 +77,12 @@
       </dl>
 
       {#if mensaje}
-        <p class="mensaje {mensaje.tipo}" role="status">{mensaje.texto}</p>
+        <p class="mensaje {mensaje.tipo}" role="status">
+          {mensaje.texto}
+          {#if mensaje.enlace}
+            {' '}<a href={mensaje.enlace.href}>{mensaje.enlace.texto}</a>
+          {/if}
+        </p>
       {/if}
 
       <button

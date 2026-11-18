@@ -137,15 +137,17 @@ src/
 
 | Tabla | Columnas relevantes |
 |-------|---------------------|
-| `perfiles` | `id` (FK auth), `nombre`, `rol` (`admin` / `cliente`) — se crea con un *trigger* al registrarse |
+| `perfiles` | `id` (FK auth), `nombre`, `email`, `rol` (enum `rol_usuario`: `admin` / `cliente`), `activo`, `created_at` — se crea con un *trigger* al registrarse |
 | `categorias` | `id`, `nombre` |
-| `libros` | `id`, `titulo`, `autor`, `isbn` (único), `portada`, `categoria_id`, `ejemplares_total`, `ejemplares_disponibles` |
-| `prestamos` | `id`, `usuario_id`, `libro_id`, `fecha_prestamo`, `fecha_devolucion_prevista`, `fecha_devolucion_real`, `estado` |
-| `multas` | `id`, `prestamo_id`, `dias_atraso`, `monto`, `pagada` (relación 1-1 con `prestamos`) |
+| `libros` | `id`, `titulo`, `autor`, `isbn` (único), `portada`, `categoria_id`, `ejemplares_total`, `ejemplares_disponibles`, `created_at` |
+| `prestamos` | `id`, `usuario_id`, `libro_id`, `fecha_prestamo`, `fecha_devolucion_prevista`, `fecha_devolucion_real`, `estado` (enum `estado_prestamo`) |
+| `multas` | `id`, `prestamo_id`, `dias_atraso`, `monto`, `pagada`, `fecha_pago` (relación 1-1 con `prestamos`) |
+
+> Tipos: ids `int8`, `usuario_id` `uuid`, fechas `date`, `monto` `numeric` (PostgREST lo entrega como string).
 
 **Funciones RPC**
 
-- `pedir_prestamo(p_libro_id)` — valida multas impagas, descuenta stock y crea el préstamo.
+- `pedir_prestamo(p_libro_id)` — valida multas impagas **y préstamos atrasados**, descuenta stock y crea el préstamo (fechas por default de la tabla).
 - `actualizar_libro(...)` — edita el libro recalculando el stock.
 - `marcar_atrasados()` — marca los préstamos vencidos (puede ejecutarse con un *cron*).
 
