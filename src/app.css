@@ -400,44 +400,117 @@ select[aria-invalid='true']:focus {
    Mensajes / alertas
    ============================================================ */
 
-.mensaje,
-.alerta {
+.mensaje {
   display: block;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
   border: 1px solid transparent;
+  border-left-width: 4px; /* barra de acento del tipo */
   border-radius: var(--radio);
   font-size: 0.95rem;
   font-weight: 500;
+  line-height: 1.55;
+  box-shadow: var(--sombra-xs);
+  animation: mensaje-entra 0.25s ease-out;
 }
 
-.mensaje.ok,
-.alerta.ok {
+/* círculo con ícono al inicio del texto */
+.mensaje::before {
+  display: inline-grid;
+  place-items: center;
+  width: 1.3em;
+  height: 1.3em;
+  margin-right: 0.55em;
+  border-radius: 50%;
+  font-family: var(--fuente);
+  font-size: 0.7em;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  vertical-align: -0.2em;
+}
+
+.mensaje.ok {
   background: var(--color-exito-suave);
   border-color: var(--color-exito-borde);
+  border-left-color: var(--color-exito);
   color: #15803d;
 }
 
-.mensaje.error,
-.alerta.error {
+.mensaje.ok::before {
+  content: '✓';
+  background: var(--color-exito);
+}
+
+.mensaje.error {
   background: var(--color-error-suave);
   border-color: var(--color-error-borde);
+  border-left-color: var(--color-error);
   color: #b91c1c;
 }
 
-.mensaje.aviso,
-.alerta.aviso {
+.mensaje.error::before {
+  content: '✕';
+  background: var(--color-error);
+}
+
+.mensaje.aviso {
   background: var(--color-advertencia-suave);
   border-color: var(--color-advertencia-borde);
+  border-left-color: var(--color-advertencia);
   color: #92400e;
 }
 
-.aviso {
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--color-error-borde);
-  border-radius: var(--radio);
-  background: var(--color-error-suave);
-  color: #b91c1c;
-  font-weight: 500;
+.mensaje.aviso::before {
+  content: '!';
+  background: var(--color-advertencia);
+}
+
+/* CTA dentro del mensaje ("Ver mis préstamos", "Verlo en el catálogo") */
+.mensaje a {
+  display: inline-block;
+  margin-left: 0.45rem;
+  padding: 0.15rem 0.75rem;
+  border-radius: var(--radio-pill);
+  background: var(--color-primario);
+  color: #fff;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-decoration: none;
+  transition: filter var(--transicion), transform var(--transicion);
+}
+
+.mensaje.ok a {
+  background: var(--color-exito);
+}
+
+.mensaje.error a {
+  background: var(--color-error);
+}
+
+.mensaje.aviso a {
+  background: var(--color-advertencia);
+}
+
+.mensaje a:hover {
+  filter: brightness(0.92);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.mensaje a:focus-visible {
+  outline: 2px solid var(--texto);
+  outline-offset: 2px;
+}
+
+@keyframes mensaje-entra {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ============================================================

@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import { getLibros, getCategorias } from '#lib/api/libros.js';
   import { pedirPrestamo, motivoBloqueoPrestamo } from '#lib/api/prestamos.js';
+  import { confirmar } from '#lib/stores/confirmacion.svelte.js';
   import { sesion } from '#lib/stores/sesion.svelte.js';
   import Buscador from '#lib/components/libros/Buscador.svelte';
   import Filtros from '#lib/components/libros/Filtros.svelte';
@@ -78,7 +79,12 @@
       return;
     }
 
-    if (!confirm(`¿Solicitar en préstamo "${libro.titulo}"?`)) return;
+    const acepto = await confirmar({
+      titulo: 'Solicitar préstamo',
+      mensaje: `¿Querés pedir "${libro.titulo}" en préstamo?`,
+      textoOk: 'Solicitar'
+    });
+    if (!acepto) return;
 
     const { error: err } = await pedirPrestamo(libro.id);
 

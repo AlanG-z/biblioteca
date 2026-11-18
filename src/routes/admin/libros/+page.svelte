@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { getLibros, getCategorias, eliminarLibro } from '#lib/api/libros.js';
+  import { confirmar } from '#lib/stores/confirmacion.svelte.js';
   import Buscador from '#lib/components/libros/Buscador.svelte';
   import Filtros from '#lib/components/libros/Filtros.svelte';
 
@@ -48,7 +49,13 @@
 
   async function eliminar(libro) {
     mensaje = null;
-    if (!confirm(`¿Eliminar "${libro.titulo}"? Esta acción no se puede deshacer.`)) return;
+    const acepto = await confirmar({
+      titulo: 'Eliminar libro',
+      mensaje: `¿Eliminar "${libro.titulo}"? Esta acción no se puede deshacer.`,
+      textoOk: 'Eliminar',
+      peligro: true
+    });
+    if (!acepto) return;
 
     const { error: err } = await eliminarLibro(libro.id);
 

@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { iniciarSesionStore, sesion } from '#lib/stores/sesion.svelte.js';
   import Navbar from '#lib/components/layout/Navbar.svelte';
+  import Confirmacion from '#lib/components/ui/Confirmacion.svelte';
 
   let { children } = $props();
 
@@ -54,6 +55,8 @@
     </div>
   </div>
 </footer>
+
+<Confirmacion />
 
 <style>
   .pie {
