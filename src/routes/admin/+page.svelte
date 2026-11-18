@@ -94,6 +94,6 @@
 
     .acceso:hover .flecha {
         transform: translateX(4px);
-        color: var(--color-primario);
+        color: var(--color-primario-texto);
     }
 </style>

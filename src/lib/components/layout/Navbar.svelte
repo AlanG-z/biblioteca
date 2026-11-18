@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { sesion } from '#lib/stores/sesion.svelte.js';
+  import { tema, alternarTema } from '#lib/stores/tema.svelte.js';
   import { salir } from '#lib/api/auth.js';
 
   let abierto = $state(false);
@@ -71,6 +72,16 @@
         {/if}
       </div>
     </div>
+
+    <button
+      class="tema"
+      type="button"
+      onclick={alternarTema}
+      aria-label={tema.actual === 'oscuro' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+      title={tema.actual === 'oscuro' ? 'Modo claro' : 'Modo oscuro'}
+    >
+      {tema.actual === 'oscuro' ? '☀️' : '🌙'}
+    </button>
   </nav>
 </header>
 
@@ -196,8 +207,33 @@
 
   .enlaces a.activa {
     background: var(--color-primario-suave); /* píldora verde suave */
-    color: var(--color-primario);
+    color: var(--color-primario-texto);
     font-weight: 600;
+  }
+
+  .tema {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-pill);
+    background: var(--superficie-2);
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      background var(--transicion),
+      border-color var(--transicion),
+      transform var(--transicion);
+  }
+
+  .tema:hover {
+    background: var(--superficie-hover);
+    border-color: var(--color-primario);
+    transform: translateY(-1px);
   }
 
   .sesion {

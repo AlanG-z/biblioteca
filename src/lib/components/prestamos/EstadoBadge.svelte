@@ -39,25 +39,25 @@
   .activo {
     background: var(--color-exito-suave);
     border-color: var(--color-exito-borde);
-    color: var(--color-exito); /* préstamo activo: verde éxito */
+    color: var(--color-exito-texto); /* préstamo activo: verde éxito */
   }
 
   .advertencia {
     background: var(--color-advertencia-suave);
     border-color: var(--color-advertencia-borde);
-    color: #92400e; /* próximo a vencer: amarillo/naranja advertencia */
+    color: var(--color-advertencia-texto); /* próximo a vencer: amarillo/naranja advertencia */
   }
 
   .atrasado {
     background: var(--color-error-suave);
     border-color: var(--color-error-borde);
-    color: #b91c1c; /* retrasado: rojo alerta */
+    color: var(--color-error-texto); /* retrasado: rojo alerta */
   }
 
   .devuelto {
     background: var(--color-exito-suave);
     border-color: var(--color-exito-borde);
-    color: var(--color-exito); /* devolución completada a tiempo: verde */
+    color: var(--color-exito-texto); /* devolución completada a tiempo: verde */
   }
 
   .devuelto::before {

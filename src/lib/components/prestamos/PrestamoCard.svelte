@@ -170,12 +170,12 @@
   }
 
   .detalle.alerta {
-    color: var(--color-error);
+    color: var(--color-error-texto);
     font-weight: 600;
   }
 
   .detalle.aviso {
-    color: #92400e;
+    color: var(--color-advertencia-texto);
     font-weight: 600;
   }
 
@@ -185,7 +185,7 @@
     border: 1px solid var(--color-error-borde);
     border-radius: var(--radio-sm);
     background: var(--color-error-suave);
-    color: var(--color-error);
+    color: var(--color-error-texto);
     font-size: 0.875rem;
     font-weight: 600;
   }
@@ -193,6 +193,6 @@
   .multa.pagada {
     background: var(--color-exito-suave);
     border-color: var(--color-exito-borde);
-    color: var(--color-exito);
+    color: var(--color-exito-texto);
   }
 </style>

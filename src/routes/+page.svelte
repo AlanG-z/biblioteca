@@ -164,7 +164,7 @@
     border-radius: var(--radio-pill);
     background: var(--color-advertencia-suave);
     border: 1px solid var(--color-advertencia-borde);
-    color: #92400e;
+    color: var(--color-advertencia-texto);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -291,7 +291,7 @@
     font-size: 2rem;
     font-weight: 700;
     line-height: 1.1;
-    color: var(--color-primario);
+    color: var(--color-primario-texto);
   }
 
   .stat dd {
@@ -317,7 +317,7 @@
   .ver-todos {
     font-weight: 700;
     font-size: 0.95rem;
-    color: var(--color-primario);
+    color: var(--color-primario-texto);
   }
 
   .grilla {
@@ -422,8 +422,8 @@
     justify-content: space-between;
     gap: 1.5rem;
     padding: 2.5rem;
-    background: linear-gradient(135deg, #fef9c3, #fefce8);
-    border: 1px solid #fde68a;
+    background: linear-gradient(135deg, var(--color-advertencia-suave), var(--fondo));
+    border: 1px solid var(--color-advertencia-borde);
     border-radius: var(--radio-lg);
   }
 

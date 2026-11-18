@@ -178,7 +178,7 @@
   }
 
   .campo-error {
-    color: var(--color-error);
+    color: var(--color-error-texto);
     font-size: 0.875rem;
     font-weight: 500;
     margin: 0;

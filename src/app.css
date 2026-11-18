@@ -33,6 +33,13 @@
   --color-error-suave: #fef2f2;
   --color-error-borde: #fecaca;
 
+  /* texto de estado: se usa sobre los tintes "-suave" (se aclara en modo oscuro,
+     donde los sólidos #15803d / #dc2626 no alcanzan contraste) */
+  --color-primario-texto: #1b4332;
+  --color-exito-texto: #15803d;
+  --color-error-texto: #b91c1c;
+  --color-advertencia-texto: #92400e;
+
   /* ---- neutros ---- */
   --fondo: #fafaf7; /* crema */
   --fondo-gradiente: linear-gradient(180deg, #f0fdf4 0%, #fafaf7 440px);
@@ -72,6 +79,53 @@
   --transicion: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 
   --ancho: 1120px;
+}
+
+/* ============================================================
+   Modo oscuro — se activa con <html data-tema="oscuro">
+   (lo pone el script inline de app.html antes del primer pintado
+   y lo alterna #lib/stores/tema.svelte.js)
+   ============================================================ */
+
+:root[data-tema='oscuro'] {
+  color-scheme: dark;
+
+  /* neutros: fondo oscuro con tinte verde, superficies un paso más claras */
+  --fondo: #0d1512;
+  --fondo-gradiente: linear-gradient(180deg, #0b1d15 0%, #0d1512 440px);
+  --superficie: #152019;
+  --superficie-2: #1a2820;
+  --superficie-hover: #213028;
+  --texto: #e9f1ec;
+  --texto-cuerpo: #bdcac3;
+  --texto-suave: #8fa198;
+  --texto-tenue: #6b7d74;
+  --borde: #28352e;
+  --borde-fuerte: #3a4a42;
+
+  /* títulos, enlaces y énfasis: versiones claras legibles sobre fondo oscuro */
+  --color-titulos: #f2f7f3;
+  --color-enlace: #7dd3a8;
+  --texto-enfasis: #fb923c;
+  --naranja: #fb923c;
+
+  /* tintes suaves (píldoras, chips, badges): pasan a fondos oscuros */
+  --color-primario-suave: #103121;
+  --color-primario-borde: #1d5138;
+  --naranja-suave: #2e1a10;
+  --naranja-borde: #6b3a1c;
+  --color-exito-suave: #0e2c1d;
+  --color-exito-borde: #1f5c3a;
+  --color-error-suave: #2d1414;
+  --color-error-borde: #6b2424;
+  --color-advertencia-suave: #2e2312;
+  --color-advertencia-borde: #6b4d1a;
+
+  /* texto de estado sobre esos tintes */
+  --color-primario-texto: #6ee7b7;
+  --color-exito-texto: #4ade80;
+  --color-error-texto: #f87171;
+  --color-advertencia-texto: #fbbf24;
 }
 
 /* ============================================================
@@ -292,7 +346,7 @@ small,
 .btn-secundario:hover:not(:disabled) {
   background: var(--superficie-hover);
   border-color: var(--color-primario);
-  color: var(--color-primario);
+  color: var(--color-primario-texto);
 }
 
 .btn-fantasma {
@@ -433,7 +487,7 @@ select[aria-invalid='true']:focus {
   background: var(--color-exito-suave);
   border-color: var(--color-exito-borde);
   border-left-color: var(--color-exito);
-  color: #15803d;
+  color: var(--color-exito-texto);
 }
 
 .mensaje.ok::before {
@@ -445,7 +499,7 @@ select[aria-invalid='true']:focus {
   background: var(--color-error-suave);
   border-color: var(--color-error-borde);
   border-left-color: var(--color-error);
-  color: #b91c1c;
+  color: var(--color-error-texto);
 }
 
 .mensaje.error::before {
@@ -457,7 +511,7 @@ select[aria-invalid='true']:focus {
   background: var(--color-advertencia-suave);
   border-color: var(--color-advertencia-borde);
   border-left-color: var(--color-advertencia);
-  color: #92400e;
+  color: var(--color-advertencia-texto);
 }
 
 .mensaje.aviso::before {
@@ -552,7 +606,7 @@ select[aria-invalid='true']:focus {
 }
 
 .estado.error {
-  color: var(--color-error);
+  color: var(--color-error-texto);
 }
 
 .spinner {

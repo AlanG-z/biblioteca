@@ -131,14 +131,14 @@
     height: 3rem;
     border-radius: 50%;
     background: var(--color-primario-suave);
-    color: var(--color-primario);
+    color: var(--color-primario-texto);
     font-size: 1.35rem;
     line-height: 1;
   }
 
   .icono.peligro {
     background: var(--color-error-suave);
-    color: var(--color-error);
+    color: var(--color-error-texto);
   }
 
   h2 {

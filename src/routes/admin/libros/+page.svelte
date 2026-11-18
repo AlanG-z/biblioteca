@@ -207,7 +207,7 @@
 
   .estado.error {
     background: none;
-    color: var(--color-error);
+    color: var(--color-error-texto);
   }
 
   .conteo {

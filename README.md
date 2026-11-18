@@ -22,6 +22,7 @@ Desarrollada con **SvelteKit 5** (runes) y **Supabase** (autenticación, base de
 
 ### Transversal
 - Navbar *sticky* clara con logo, menú móvil y píldora verde en la sección activa.
+- **Modo claro/oscuro** con botón 🌙/☀️ en la navbar: se aplica antes del primer pintado (sin flash), respeta la preferencia del sistema (`prefers-color-scheme`) y queda guardado en `localStorage`.
 - Títulos *serif* (`Source Serif 4`) sobre fondo crema e interfaz en **Inter**.
 - Footer oscuro de 3 columnas con enlaces según el rol.
 - Accesibilidad: `aria-label`, `role`, `aria-invalid`, foco visible y `prefers-reduced-motion`.

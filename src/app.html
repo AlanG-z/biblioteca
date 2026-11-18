@@ -5,6 +5,25 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="text-scale" content="scale" />
 		<meta name="theme-color" content="#1b4332" />
+		<script>
+			// Aplica el tema antes del primer pintado: evita el flash de modo claro
+			// en una sesión que quedó en modo oscuro. Lo alterna src/lib/stores/tema.svelte.js
+			(function () {
+				var guardado = null;
+				try {
+					guardado = localStorage.getItem('tema');
+				} catch (e) {
+					// sin storage (modo privado): se usa la preferencia del sistema
+				}
+				var tema =
+					guardado === 'claro' || guardado === 'oscuro'
+						? guardado
+						: window.matchMedia('(prefers-color-scheme: dark)').matches
+							? 'oscuro'
+							: 'claro';
+				document.documentElement.dataset.tema = tema;
+			})();
+		</script>
 		<meta
 			name="description"
 			content="Biblioteca online: explorá el catálogo, pedí libros en préstamo y gestioná tus lecturas."
